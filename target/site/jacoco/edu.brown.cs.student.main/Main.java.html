@@ -4,6 +4,7 @@ import Parser.CreatorFromRow;
 import Parser.CreatorObjects.CreateListStrings;
 import Parser.FactoryFailureException;
 import Parser.Parser;
+import Parser.Search.Search;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * will not be running the parser through main(), but rather interacting with the parser through
  * extensive testing!
  */
-<span class="nc" id="L16">public final class Main {</span>
+<span class="nc" id="L17">public final class Main {</span>
 
   /**
    * The main method is the entry point of the application.
@@ -22,21 +23,22 @@ import java.util.List;
    */
   public static void main(String[] args) {
     try {
-<span class="nc" id="L25">      CreatorFromRow&lt;List&lt;String&gt;&gt; creatorObject = new CreateListStrings();</span>
-<span class="nc" id="L26">      Parser&lt;List&lt;String&gt;&gt; parser =</span>
+<span class="nc" id="L26">      CreatorFromRow&lt;List&lt;String&gt;&gt; creatorObject = new CreateListStrings();</span>
+<span class="nc" id="L27">      Parser&lt;List&lt;String&gt;&gt; parser =</span>
           new Parser&lt;List&lt;String&gt;&gt;(new FileReader(args[0]), creatorObject);
-<span class="nc" id="L28">      Boolean hasHeader = false;</span>
-<span class="nc bnc" id="L29" title="All 2 branches missed.">      if (args[1].equalsIgnoreCase(&quot;true&quot;)) {</span>
-<span class="nc" id="L30">        hasHeader = true;</span>
-      }
-
-<span class="nc" id="L33">      parser.parse(hasHeader);</span>
-<span class="nc" id="L34">      System.out.println(parser.getParsed());</span>
-<span class="nc" id="L35">    } catch (IOException e) {</span>
-<span class="nc" id="L36">      System.err.println(&quot;File not Found&quot;);</span>
-<span class="nc" id="L37">    } catch (FactoryFailureException e) {</span>
-<span class="nc" id="L38">      throw new RuntimeException(e);</span>
-<span class="nc" id="L39">    }</span>
-<span class="nc" id="L40">  }</span>
+<span class="nc" id="L29">      boolean hasHeader = args[1].equalsIgnoreCase(&quot;true&quot;);</span>
+<span class="nc" id="L30">      parser.parse(hasHeader);</span>
+<span class="nc" id="L31">      System.out.println();</span>
+<span class="nc" id="L32">      String name = args[2];</span>
+<span class="nc" id="L33">      String collum = args[3];</span>
+<span class="nc" id="L34">      Search search = new Search();</span>
+<span class="nc" id="L35">      System.out.println(</span>
+<span class="nc" id="L36">          search.search(parser.getHeader(), parser.getParsed(), collum, name).toString());</span>
+<span class="nc" id="L37">    } catch (IOException e) {</span>
+<span class="nc" id="L38">      System.err.println(&quot;File not Found&quot;);</span>
+<span class="nc" id="L39">    } catch (FactoryFailureException e) {</span>
+<span class="nc" id="L40">      throw new RuntimeException(e);</span>
+<span class="nc" id="L41">    }</span>
+  }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

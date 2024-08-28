@@ -4,6 +4,7 @@ import Parser.CreatorFromRow;
 import Parser.CreatorObjects.CreateListStrings;
 import Parser.FactoryFailureException;
 import Parser.Parser;
+import Parser.Search.Search;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -27,7 +28,12 @@ public final class Main {
           new Parser<List<String>>(new FileReader(args[0]), creatorObject);
       boolean hasHeader = args[1].equalsIgnoreCase("true");
       parser.parse(hasHeader);
-      System.out.println(parser.getParsed());
+      System.out.println();
+      String name = args[2];
+      String collum = args[3];
+      Search search = new Search();
+      System.out.println(
+          search.search(parser.getHeader(), parser.getParsed(), collum, name).toString());
     } catch (IOException e) {
       System.err.println("File not Found");
     } catch (FactoryFailureException e) {
