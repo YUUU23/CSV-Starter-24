@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CSVParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">s0</a> &gt; <a href="index.source.html" class="el_package">Parser</a> &gt; <span class="el_source">CSVParser.java</span></div><h1>CSVParser.java</h1><pre class="source lang-java linenums">package Parser;
+
+import edu.brown.cs.student.main.CreatorFromRow;
+import edu.brown.cs.student.main.FactoryFailureException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+
+/**
+ * Class to parse csv rows into list of generic object determined by parser user.
+ *
+ * @param &lt;T&gt; the generic object to turn each row into
+ */
+public class CSVParser&lt;T&gt; {
+
+  private final Reader reader;
+  private final CreatorFromRow&lt;T&gt; rowObjectCreator;
+  private final List&lt;T&gt; dataNoHeaderList;
+  private final boolean hasHeader;
+  private final List&lt;String&gt; headerList;
+
+  /**
+   * Constructor for a CSVParser object. This is a parser read-in CSV file and parse each row into
+   * the target T object specified by the CreatorFromRow parameter. Note: headers are parsed out
+   * separately given hasHeader parameter.
+   *
+   * @param reader a general reader to satisfy different types of csv input
+   * @param rowObjectCreator parse each row into generic object determined by parser user
+   * @param hasHeader true if csv file has header, false otherwise
+   */
+  public CSVParser(Reader reader, CreatorFromRow&lt;T&gt; rowObjectCreator, boolean hasHeader)
+<span class="fc" id="L36">      throws IOException {</span>
+<span class="fc" id="L37">    this.reader = reader;</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">    if (rowObjectCreator == null) {</span>
+<span class="fc" id="L39">      throw new IOException(&quot;rowObjectCreator cannot be null!&quot;);</span>
+    } else {
+<span class="fc" id="L41">      this.rowObjectCreator = rowObjectCreator;</span>
+    }
+<span class="fc" id="L43">    this.hasHeader = hasHeader;</span>
+<span class="fc" id="L44">    this.dataNoHeaderList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L45">    this.headerList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L46">  }</span>
+
+  /**
+   * Read-in line by line csv file to parse each row of the csv file into List where T is an object
+   * specified by parse user. If header is in csv file, header will be parsed out separately into a
+   * List of string while main body rows parsed into T. If header is not provided in csv, all row in
+   * csv will be parsed to List at end. Stores parsing result in dataNoHeaderList and headerList to
+   * be accessed through getter functions.
+   *
+   * @throws FactoryFailureException when row cannot be parsed into the desired object using
+   * @throws IOException when readLine() fails to read-in a row in csv
+   */
+  public void parse() throws FactoryFailureException, IOException {
+    String line;
+<span class="fc" id="L60">    boolean shouldParseHeader = hasHeader; // if there's a header, we need to parse a header list</span>
+<span class="fc" id="L61">    Pattern regexSplitCSVRow = Pattern.compile(&quot;,(?=([^\\\&quot;]*\\\&quot;[^\\\&quot;]*\\\&quot;)*(?![^\\\&quot;]*\\\&quot;))&quot;);</span>
+<span class="fc" id="L62">    BufferedReader readInBuffer = new BufferedReader(reader);</span>
+
+<span class="fc bfc" id="L64" title="All 2 branches covered.">    while ((line = readInBuffer.readLine()) != null) {</span>
+<span class="fc" id="L65">      String[] result = regexSplitCSVRow.split(line);</span>
+<span class="fc" id="L66">      List&lt;String&gt; lineToArr = Arrays.stream(result).toList();</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">      if (shouldParseHeader) {</span>
+<span class="fc" id="L68">        this.headerList.addAll(lineToArr);</span>
+<span class="fc" id="L69">        shouldParseHeader = false; // only need to parse header once with first row in csv</span>
+      } else {
+<span class="fc" id="L71">        this.dataNoHeaderList.add(this.rowObjectCreator.create(lineToArr));</span>
+      }
+<span class="fc" id="L73">    }</span>
+
+<span class="fc" id="L75">    readInBuffer.close();</span>
+<span class="fc" id="L76">  }</span>
+
+  /**
+   * Getter to access the parsed list of row object excluding header. If file does not have header,
+   * dataNoHeaderList will contain the entire csv file.
+   *
+   * @return a list holding parsed out main body csv rows from csv file
+   */
+  public List&lt;T&gt; getParseResult() {
+<span class="fc" id="L85">    return this.dataNoHeaderList;</span>
+  }
+
+  /**
+   * Getter to access the list containing header of csv if any header is available
+   *
+   * @return a list holding header of csv file, empty if no header in provided csv
+   */
+  public List&lt;String&gt; getParseHeader() {
+<span class="fc" id="L94">    return this.headerList;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Search.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">s0</a> &gt; <a href="index.source.html" class="el_package">Search</a> &gt; <span class="el_source">Search.java</span></div><h1>Search.java</h1><pre class="source lang-java linenums">package Search;
+
+import CreatorFromRowObjects.StringListCreator;
+import Parser.CSVParser;
+import edu.brown.cs.student.main.FactoryFailureException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Class to search csv file given item as a string to search for, user can provide column name,
+ * index, or none to search entire file.
+ */
+public class Search {
+
+  private final List&lt;String&gt; headerList;
+  private final List&lt;List&lt;String&gt;&gt; listSearchThrough;
+
+  /**
+   * Constructor to build a Search object to begin searching in target csv file. May search with
+   * given column name, column index number, or no column specification. Create Parse object to
+   * read-in csv file and convert each row to a list of object.
+   *
+   * @param fileName file path under data directory (data/ (fill in))
+   * @param hasHeader true if csv has header, false otherwise
+   * @throws FactoryFailureException when parser fails to convert each row into List of string
+   *     object
+   * @throws IOException when invalid file name or file not found
+   */
+<span class="fc" id="L32">  public Search(String fileName, boolean hasHeader) throws FactoryFailureException, IOException {</span>
+    // to make files only under data directory accessible
+<span class="fc bfc" id="L34" title="All 2 branches covered.">    if (fileName.charAt(0) == '.') {</span>
+<span class="fc" id="L35">      System.out.println(fileName.charAt(0));</span>
+<span class="fc" id="L36">      throw new IOException(&quot;invalid file name&quot;);</span>
+    }
+<span class="fc" id="L38">    Reader fileReader = new FileReader(&quot;data/&quot; + fileName);</span>
+
+    // create parser and call parse
+<span class="fc" id="L41">    CSVParser&lt;List&lt;String&gt;&gt; parser =</span>
+        new CSVParser&lt;&gt;(fileReader, new StringListCreator(), hasHeader);
+<span class="fc" id="L43">    parser.parse();</span>
+<span class="fc" id="L44">    this.listSearchThrough = parser.getParseResult();</span>
+<span class="fc" id="L45">    this.headerList = parser.getParseHeader();</span>
+<span class="fc" id="L46">  }</span>
+
+  /**
+   * Compares string a to b after trimming and replacing all whitespaces. Capitalization are viewed
+   * as different strings. (Used in Search to see if item an is the same as item b).
+   *
+   * @param a string a
+   * @param b string b
+   * @return true if string an is equal to string b, false otherwise
+   */
+  public boolean checkStringEqual(String a, String b) {
+<span class="fc" id="L57">    a = a.trim().replaceAll(&quot;\\s&quot;, &quot;&quot;);</span>
+<span class="fc" id="L58">    b = b.trim().replaceAll(&quot;\\s&quot;, &quot;&quot;);</span>
+<span class="fc" id="L59">    return a.equals(b);</span>
+  }
+
+  /**
+   * Print out the row in given csv that contains the item we're looking for according to column
+   * identification specifications. When row not found, not found messages are printed instead
+   * according to given column identification.
+   *
+   * @param row item found in this row, null if item not found
+   * @param searchFor item to search for
+   * @param columnName name of the column item was found if provided column name, null if no column
+   *     name specified
+   * @param colIndex the index of column item was found if provided column index, -1 if no column
+   *     index specified
+   * @param found true if item was found, false otherwise
+   */
+  public void printFoundRow(
+      List&lt;String&gt; row, String searchFor, String columnName, int colIndex, boolean found) {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">    if (found) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">      if (columnName != null) {</span>
+<span class="fc" id="L79">        System.out.println(</span>
+            &quot;Row containing &quot;
+                + searchFor
+                + &quot; under column&quot;
+                + columnName
+                + &quot;: &quot;
+<span class="fc" id="L85">                + String.join(&quot;, &quot;, row));</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">      } else if (colIndex &gt;= 0) {</span>
+<span class="fc" id="L87">        System.out.println(</span>
+            &quot;Row containing &quot;
+                + searchFor
+                + &quot; under column number &quot;
+                + colIndex
+                + &quot;: &quot;
+<span class="fc" id="L93">                + String.join(&quot;, &quot;, row));</span>
+      } else {
+<span class="fc" id="L95">        System.out.println(&quot;Row containing &quot; + searchFor + &quot;: &quot; + String.join(&quot;, &quot;, row));</span>
+      }
+    } else {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">      if (columnName != null) {</span>
+<span class="fc" id="L99">        System.out.println(searchFor + &quot;not found in given csv under column name &quot; + columnName);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">      } else if (colIndex &gt;= 0) {</span>
+<span class="fc" id="L101">        System.out.println(searchFor + &quot;not found in given csv under column index &quot; + colIndex);</span>
+      } else {
+<span class="fc" id="L103">        System.out.println(searchFor + &quot;not found in given csv&quot;);</span>
+      }
+    }
+<span class="fc" id="L106">  }</span>
+
+  /**
+   * To exclude mismatch rows based on row sizes when searching for item. If header is provided,
+   * standard row size is determined by size of list holding header items. If header not provided,
+   * standard size is determined by the first row in csv. Ensures search functions search withing
+   * index boundary.
+   *
+   * @param listOfRows containing main body csv rows (exclude header if header provided, entire csv
+   *     if no header)
+   * @param headerList if not empty (csv has header), all rows must be header size (set as standard
+   *     size) to be considered as matched row in search
+   * @return the filtered list of main body csv rows with matching size ready for search
+   */
+  public List&lt;List&lt;String&gt;&gt; makeSearchable(List&lt;List&lt;String&gt;&gt; listOfRows, List&lt;String&gt; headerList) {
+    int expectedRowSize;
+<span class="fc bfc" id="L122" title="All 2 branches covered.">    if (!headerList.isEmpty()) {</span>
+<span class="fc" id="L123">      expectedRowSize = headerList.size();</span>
+    } else {
+<span class="fc" id="L125">      expectedRowSize = listOfRows.get(0).size();</span>
+    }
+
+<span class="fc" id="L128">    List&lt;List&lt;String&gt;&gt; resultList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">    for (List&lt;String&gt; row : listOfRows) {</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">      if (row.size() != expectedRowSize) {</span>
+<span class="fc" id="L131">        System.out.println(&quot;mismatched to row format: &quot; + row);</span>
+      } else {
+<span class="fc" id="L133">        resultList.add(row);</span>
+      }
+<span class="fc" id="L135">    }</span>
+<span class="fc" id="L136">    return resultList;</span>
+  }
+
+  /**
+   * A search function to look for target item in csv given an index for the column to search under.
+   * Print out result to user interface (See printFoundRow() in Search class).
+   *
+   * @param searchFor item to look for
+   * @param columnIndex index of column to search under
+   * @return list holding rows found with item under this provided column given column index
+   * @throws ArrayIndexOutOfBoundsException if index provided is out of bound for csv file
+   */
+  public List&lt;List&lt;String&gt;&gt; startSearch(String searchFor, int columnIndex)
+      throws ArrayIndexOutOfBoundsException {
+<span class="fc" id="L150">    List&lt;List&lt;String&gt;&gt; foundRows = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L151">    List&lt;List&lt;String&gt;&gt; searchableList =</span>
+<span class="fc" id="L152">        this.makeSearchable(this.listSearchThrough, this.headerList);</span>
+
+<span class="fc bfc" id="L154" title="All 2 branches covered.">    for (List&lt;String&gt; row : searchableList) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">      if (this.checkStringEqual(searchFor, row.get(columnIndex))) {</span>
+<span class="fc" id="L156">        this.printFoundRow(row, searchFor, null, columnIndex, true);</span>
+<span class="fc" id="L157">        foundRows.add(row);</span>
+      }
+<span class="fc" id="L159">    }</span>
+
+<span class="fc bfc" id="L161" title="All 2 branches covered.">    if (foundRows.isEmpty()) {</span>
+<span class="fc" id="L162">      this.printFoundRow(null, searchFor, null, columnIndex, false);</span>
+    }
+
+<span class="fc" id="L165">    return foundRows;</span>
+  }
+
+  /**
+   * A search function to look for target item in csv given a name for the column to search. Print
+   * out result to user interface (See printFoundRow() in Search class). Search will only happen if
+   * header row exists and if given column name is found in header list.
+   *
+   * @param searchFor item to search for
+   * @param columnName name of column to search in this column only
+   * @return list holding rows found with item under this provided column name
+   */
+  public List&lt;List&lt;String&gt;&gt; startSearch(String searchFor, String columnName) {
+<span class="fc" id="L178">    List&lt;List&lt;String&gt;&gt; foundRows = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L179">    List&lt;List&lt;String&gt;&gt; searchableList =</span>
+<span class="fc" id="L180">        this.makeSearchable(this.listSearchThrough, this.headerList);</span>
+
+<span class="fc bfc" id="L182" title="All 2 branches covered.">    if (!this.headerList.isEmpty()) {</span>
+<span class="fc" id="L183">      int columnIndex = -1;</span>
+      // find index of according column containing provided header name
+<span class="fc bfc" id="L185" title="All 2 branches covered.">      for (int i = 0; i &lt; this.headerList.size(); i++) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        if (this.checkStringEqual(this.headerList.get(i).trim(), columnName)) {</span>
+<span class="fc" id="L187">          columnIndex = i;</span>
+        }
+      }
+
+      // header name found, search with columnIndex
+<span class="fc bfc" id="L192" title="All 2 branches covered.">      if (columnIndex != -1) {</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        for (List&lt;String&gt; row : searchableList) {</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">          if (this.checkStringEqual(searchFor, row.get(columnIndex))) {</span>
+<span class="fc" id="L195">            this.printFoundRow(row, searchFor, columnName, -1, true);</span>
+<span class="fc" id="L196">            foundRows.add(row);</span>
+          }
+<span class="fc" id="L198">        }</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        if (foundRows.isEmpty()) {</span>
+<span class="fc" id="L200">          this.printFoundRow(null, searchFor, columnName, -1, false);</span>
+        }
+      } else {
+<span class="fc" id="L203">        System.out.println(&quot;Header name not found: &quot; + columnName);</span>
+      }
+    }
+<span class="fc" id="L206">    return foundRows;</span>
+  }
+
+  /**
+   * A search function to look through each row of csv file for item without column identifications.
+   * Print out result to user interface (See printFoundRow() in Search class).
+   *
+   * @param searchFor item to search for in entire csv file
+   * @return list holding rows found with item
+   */
+  public List&lt;List&lt;String&gt;&gt; startSearch(String searchFor) {
+<span class="fc" id="L217">    List&lt;List&lt;String&gt;&gt; foundRows = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L218">    List&lt;List&lt;String&gt;&gt; searchableList =</span>
+<span class="fc" id="L219">        this.makeSearchable(this.listSearchThrough, this.headerList);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">    for (List&lt;String&gt; row : searchableList) {</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">      for (String item : row) {</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        if (this.checkStringEqual(searchFor, item)) {</span>
+<span class="fc" id="L223">          this.printFoundRow(row, searchFor, null, -1, true);</span>
+<span class="fc" id="L224">          foundRows.add(row);</span>
+        }
+<span class="fc" id="L226">      }</span>
+<span class="fc" id="L227">    }</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">    if (foundRows.isEmpty()) {</span>
+<span class="fc" id="L229">      this.printFoundRow(null, searchFor, null, -1, false);</span>
+    }
+<span class="fc" id="L231">    return foundRows;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

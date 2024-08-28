@@ -1,0 +1,8 @@
+edu/brown/cs/student/main/Main.class
+Parser/CSVParser.class
+edu/brown/cs/student/main/CreatorFromRow.class
+CreatorFromRowObjects/Star/Star.class
+CreatorFromRowObjects/StringListCreator.class
+Search/Search.class
+edu/brown/cs/student/main/FactoryFailureException.class
+CreatorFromRowObjects/Star/StarObjCreator.class
