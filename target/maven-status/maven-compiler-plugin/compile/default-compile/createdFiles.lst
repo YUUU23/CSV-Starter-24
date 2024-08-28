@@ -1,1 +1,4 @@
 edu/brown/cs/student/main/Main.class
+Parser/FactoryFailureException.class
+Parser/CreatorFromRow.class
+Parser/CreatorObjects/CreateListStrings.class

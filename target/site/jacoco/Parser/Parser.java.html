@@ -6,39 +6,62 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Parser {
+public class Parser&lt;T&gt; {
   /** TODO is this defensive enough? Feel free to edit any variable declarations */
-  public FileReader reader;
+  private final Reader reader;
 
-  public List&lt;List&lt;String&gt;&gt; parsedContent;
+  private final List&lt;T&gt; parsedContent;
+
+  private List&lt;String&gt; header;
+  private final CreatorFromRow&lt;T&gt; creatorClass;
 
   /**
    * TODO feel free to modify the header and body of this constructor however you wish
    *
-   * @param filePath - path to a csv file to be parsed
+   * @param reader - reader for the CSV File
    */
-<span class="fc" id="L20">  public Parser(String filePath) throws IOException {</span>
-<span class="fc" id="L21">    this.reader = new FileReader(filePath);</span>
-<span class="fc" id="L22">    this.parsedContent = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L23">  }</span>
+<span class="nc" id="L23">  public Parser(Reader reader, CreatorFromRow&lt;T&gt; creatorClass) throws IOException {</span>
+<span class="nc" id="L24">    this.reader = reader;</span>
+<span class="nc" id="L25">    this.parsedContent = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L26">    this.creatorClass = creatorClass;</span>
+<span class="nc" id="L27">  }</span>
 
   /**
    * TODO feel free to modify this method to incorporate your design choices
    *
    * @throws IOException when buffer reader fails to read-in a line
    */
-  public void parse() throws IOException {
+  public void parse(Boolean hasHeader) throws IOException, FactoryFailureException {
     String line;
-<span class="fc" id="L32">    Pattern regexSplitCSVRow = Pattern.compile(&quot;,(?=([^\\\&quot;]*\\\&quot;[^\\\&quot;]*\\\&quot;)*(?![^\\\&quot;]*\\\&quot;))&quot;);</span>
-<span class="fc" id="L33">    BufferedReader readInBuffer =</span>
-<span class="fc" id="L34">        new BufferedReader(reader); // wraps around readers to improve efficiency when reading</span>
+<span class="nc" id="L36">    Pattern regexSplitCSVRow = Pattern.compile(&quot;,(?=([^\\\&quot;]*\\\&quot;[^\\\&quot;]*\\\&quot;)*(?![^\\\&quot;]*\\\&quot;))&quot;);</span>
+<span class="nc" id="L37">    BufferedReader readInBuffer =</span>
+        new BufferedReader(reader); // wraps around readers to improve efficiency when reading
+<span class="nc" id="L39">    int numOfCols = -1;</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    while ((line = readInBuffer.readLine()) != null) {</span>
+<span class="nc" id="L41">      String[] result = regexSplitCSVRow.split(line);</span>
+<span class="nc" id="L42">      List&lt;String&gt; lineToArr = Arrays.stream(result).toList();</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">      if (numOfCols == -1) {</span>
+<span class="nc" id="L44">        numOfCols = lineToArr.size();</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (hasHeader) {</span>
+<span class="nc" id="L46">          this.header = lineToArr;</span>
+<span class="nc" id="L47">          continue;</span>
+        }
+      }
+<span class="nc bnc" id="L50" title="All 2 branches missed.">      if (lineToArr.size() != numOfCols) {</span>
+<span class="nc" id="L51">        throw new FactoryFailureException(</span>
+            &quot;This row doesn't have the correct number of columns&quot;, lineToArr);
+      }
+<span class="nc" id="L54">      this.parsedContent.add(this.creatorClass.create(lineToArr));</span>
+<span class="nc" id="L55">    }</span>
+<span class="nc" id="L56">    readInBuffer.close();</span>
+<span class="nc" id="L57">  }</span>
 
-<span class="fc bfc" id="L36" title="All 2 branches covered.">    while ((line = readInBuffer.readLine()) != null) {</span>
-<span class="fc" id="L37">      String[] result = regexSplitCSVRow.split(line);</span>
-<span class="fc" id="L38">      List&lt;String&gt; lineToArr = Arrays.stream(result).toList();</span>
-<span class="fc" id="L39">      parsedContent.add(lineToArr);</span>
-    }
-<span class="fc" id="L41">    readInBuffer.close();</span>
-<span class="fc" id="L42">  }</span>
+  public List&lt;T&gt; getParsed() {
+<span class="nc" id="L60">    return List.copyOf(parsedContent);</span>
+  }
+
+  public List&lt;String&gt; getHeader() {
+<span class="nc" id="L64">    return List.copyOf(header);</span>
+  }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
