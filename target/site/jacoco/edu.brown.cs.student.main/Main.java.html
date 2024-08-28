@@ -1,114 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">s0</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.student.main</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package edu.brown.cs.student.main;
 
-import Search.Search;
-import java.io.IOException;
-
-/** The Main class of our project. This is where execution begins. */
-public final class Main {
-
-  private final String[] args;
+/**
+ * The Main class of our project. This is where execution begins. Note: For this first sprint, you
+ * will not be running the parser through main(), but rather interacting with the parser through
+ * extensive testing!
+ */
+<span class="nc" id="L8">public final class Main {</span>
 
   /**
-   * The initial method called when execution begins.
+   * The main method is the entry point of the application.
    *
-   * @param args An array of command line arguments
+   * @param args command-line arguments passed to the program
    */
   public static void main(String[] args) {
-<span class="nc" id="L17">    new Main(args).run();</span>
+<span class="nc" id="L16">    System.out.println(&quot;Hello, world!&quot;);</span>
+    // Add your code here to run the application
 <span class="nc" id="L18">  }</span>
-
-<span class="nc" id="L20">  private Main(String[] args) {</span>
-<span class="nc" id="L21">    this.args = args;</span>
-<span class="nc" id="L22">  }</span>
-
-  /** Run the user interface of csv search for item in csv file. */
-  private void run() {
-
-    // check sufficient arguments
-<span class="nc bnc" id="L28" title="All 2 branches missed.">    if (args.length &lt; 3) {</span>
-<span class="nc" id="L29">      System.err.println(</span>
-          &quot;insert these arguments: &lt;file path under data directory&gt;&quot;
-              + &quot;&lt;has header (true, false)&gt;&quot;
-              + &quot;&lt;use column identifier (true, false)&gt;, [if column identifier true: name or index],&quot;
-              + &quot;&lt;item to search&gt;&quot;);
-<span class="nc" id="L34">      System.exit(1);</span>
-    }
-
-    // set up argument to according variables
-<span class="nc" id="L38">    String fileName = args[0];</span>
-<span class="nc" id="L39">    String hasHeaderStr = args[1];</span>
-<span class="nc" id="L40">    String useColumnIdStr = args[2];</span>
-
-    // get hasHeader into boolean
-<span class="nc" id="L43">    boolean hasHeader = false;</span>
-<span class="nc bnc" id="L44" title="All 4 branches missed.">    if (hasHeaderStr.equals(&quot;true&quot;) || hasHeaderStr.equals(&quot;false&quot;)) {</span>
-<span class="nc" id="L45">      hasHeader = hasHeaderStr.equals(&quot;true&quot;);</span>
-    } else {
-<span class="nc" id="L47">      System.err.println(&quot;input must be 'true' or 'false' to indicate if csv has header&quot;);</span>
-<span class="nc" id="L48">      System.exit(1);</span>
-    }
-
-    // initiate searcher object which will parse file for searching
-<span class="nc" id="L52">    Search search = null;</span>
-    try {
-<span class="nc" id="L54">      search = new Search(fileName, hasHeader);</span>
-<span class="nc" id="L55">    } catch (IOException e) {</span>
-<span class="nc" id="L56">      System.err.println(e.getMessage());</span>
-<span class="nc" id="L57">      System.exit(1);</span>
-<span class="nc" id="L58">    } catch (FactoryFailureException e) {</span>
-<span class="nc" id="L59">      System.err.println(&quot;Failed to parse csv data into List&lt;String&gt; objects.&quot;);</span>
-<span class="nc" id="L60">      System.exit(1);</span>
-<span class="nc" id="L61">    }</span>
-
-    // get columnIdentifier into boolean
-<span class="nc" id="L64">    boolean useColumnIdentifier = false;</span>
-<span class="nc bnc" id="L65" title="All 4 branches missed.">    if (useColumnIdStr.equals(&quot;true&quot;) || useColumnIdStr.equals(&quot;false&quot;)) {</span>
-<span class="nc" id="L66">      useColumnIdentifier = useColumnIdStr.equals(&quot;true&quot;);</span>
-    } else {
-<span class="nc" id="L68">      System.err.println(</span>
-          &quot;input must be 'true' or 'false' to indicate if you would like a column identifier&quot;);
-<span class="nc" id="L70">      System.exit(1);</span>
-    }
-
-    // build item to search into one string.
-    // if there's no column identifier, start from index 3 for item;
-    // otherwise args[3] is reserved for column identifier specification (name/index)
-<span class="nc" id="L76">    String itemToSearch = &quot;&quot;;</span>
-<span class="nc bnc" id="L77" title="All 2 branches missed.">    int i = useColumnIdentifier ? 4 : 3;</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">    while (i &lt; args.length) {</span>
-<span class="nc" id="L79">      itemToSearch = itemToSearch.concat(args[i]) + &quot; &quot;;</span>
-<span class="nc" id="L80">      i++;</span>
-    }
-
-    // begin search
-<span class="nc bnc" id="L84" title="All 2 branches missed.">    if (useColumnIdentifier) {</span>
-<span class="nc" id="L85">      String columnIdentifier = args[3];</span>
-      // search with column index
-      try {
-<span class="nc" id="L88">        int columnInt = Integer.parseInt(columnIdentifier);</span>
-<span class="nc" id="L89">        System.out.println(</span>
-            &quot;Begin search for &quot; + itemToSearch + &quot;under column index &quot; + columnInt + &quot;...&quot;);
-        try {
-<span class="nc" id="L92">          search.startSearch(itemToSearch, columnInt);</span>
-<span class="nc" id="L93">        } catch (ArrayIndexOutOfBoundsException m) {</span>
-<span class="nc" id="L94">          System.err.println(m.getMessage() + &quot; row size search&quot;);</span>
-<span class="nc" id="L95">        }</span>
-<span class="nc" id="L96">      } catch (NumberFormatException e) {</span>
-        // search with column name (parsing int failed)
-<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (!hasHeader) {</span>
-<span class="nc" id="L99">          System.err.println(&quot;Must have header to search with column name&quot;);</span>
-<span class="nc" id="L100">          System.exit(1);</span>
-        } else {
-<span class="nc" id="L102">          System.out.println(</span>
-              &quot;Begin search for &quot; + itemToSearch + &quot;in column &quot; + columnIdentifier + &quot;...&quot;);
-<span class="nc" id="L104">          search.startSearch(itemToSearch, columnIdentifier);</span>
-        }
-<span class="nc" id="L106">      }</span>
-<span class="nc" id="L107">    } else {</span>
-      // search entire csv, no column identification
-<span class="nc" id="L109">      System.out.println(&quot;Begin search for &quot; + itemToSearch + &quot;...&quot;);</span>
-<span class="nc" id="L110">      search.startSearch(itemToSearch);</span>
-    }
-<span class="nc" id="L112">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
